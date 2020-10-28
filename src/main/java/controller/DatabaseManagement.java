@@ -10,6 +10,9 @@ import java.util.Properties;
 
 public class DatabaseManagement {
     public final String ERROR_PROPERTIES = "Falta el archivo properties de la Base de Datos";
+    private int initial;
+    private int last;
+    private int total;
     public Connection returnConnection() {
         File file = new File("bbdd.properties");
         Properties properties = new Properties();
@@ -50,11 +53,36 @@ public class DatabaseManagement {
                 count += results.getInt("INGRESOS");
             }
             System.out.println("La suma de los ingresos es: " + count);
-            System.out.println("Duración del proceso: " + System.currentTimeMillis() + timeInit + " milisegundos.");
+            System.out.println("Duración del proceso: " + (timeInit - System.currentTimeMillis())+ " milisegundos.");
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             System.exit(0);
+        }
+    }
+
+    public synchronized void readFromDatabaseWithThreads () {
+        try (Connection conn = returnConnection()) {
+            String query = "SELECT * FROM EMPLEADOS";
+            PreparedStatement statement = conn.prepareStatement(query);
+            ResultSet results = statement.executeQuery();
+            while (results.next()) {
+                System.out.println("ID: " + results.getString("ID") + " EMAIL: " + results.getString("EMAIL") + " SALARIO: " + results.getString("INGRESOS"));
+                this.total += results.getInt("INGRESOS");
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    public void run () {
+        try {
+            Thread.sleep(15);
+            long timeInit = System.currentTimeMillis();
+            readFromDatabaseWithThreads();
+            System.out.println("Duración: " + (timeInit - System.currentTimeMillis()) + " milisegundos");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }
