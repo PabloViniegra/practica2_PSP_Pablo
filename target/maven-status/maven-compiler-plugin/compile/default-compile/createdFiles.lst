@@ -1,0 +1,4 @@
+views\View.class
+controller\DatabaseManagement.class
+controller\Home.class
+models\Worker.class
