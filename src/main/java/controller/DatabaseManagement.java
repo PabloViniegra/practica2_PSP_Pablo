@@ -1,7 +1,5 @@
 package controller;
 
-import views.View;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,9 +18,12 @@ public class DatabaseManagement extends Thread {
     }
 
     public DatabaseManagement() {
-
+        this.initial = 0;
+        this.last = 0;
     }
 
+
+    //Método de conexión a la BBDD, a través de bbdd.properties
     public Connection returnConnection() {
         File file = new File("bbdd.properties");
         Properties properties = new Properties();
@@ -50,7 +51,7 @@ public class DatabaseManagement extends Thread {
         }
         return conn;
     }
-
+    //Lectura de registros de manera secuencial
     public void readFromDatabaseInMainThread() {
         try (Connection conn = returnConnection()) {
             long timeInit = System.currentTimeMillis();
@@ -70,7 +71,8 @@ public class DatabaseManagement extends Thread {
             System.exit(0);
         }
     }
-
+    //Lectura de registros de manera concurrente
+    //Método con el que va a operar el hilo, sincronizado para que sea una seccion crítica
     public synchronized void readFromDatabaseWithThreads() {
         try (Connection conn = returnConnection()) {
 
@@ -92,7 +94,7 @@ public class DatabaseManagement extends Thread {
 
         readFromDatabaseWithThreads();
     }
-
+    //Devuelve el número de registros de la Base de Datos
     public int requestNumberOfRegisters() {
         int numberOfRegisters = 0;
         try (Connection conn = returnConnection()) {
@@ -107,27 +109,8 @@ public class DatabaseManagement extends Thread {
         return numberOfRegisters;
     }
 
-    public int getInitial() {
-        return initial;
-    }
-
-    public void setInitial(int initial) {
-        this.initial = initial;
-    }
-
-    public int getLast() {
-        return last;
-    }
-
-    public void setLast(int last) {
-        this.last = last;
-    }
-
     public int getTotal() {
         return total;
     }
 
-    public void setTotal(int total) {
-        this.total = total;
-    }
 }

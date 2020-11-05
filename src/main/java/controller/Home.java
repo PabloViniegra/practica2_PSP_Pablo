@@ -33,30 +33,33 @@ public class Home {
 
             dbThreads = new DatabaseManagement(initial, last);
             dbThreads.start();
+
             mydbs.add(dbThreads);
+
+
+        }
+
+
+        mydbs.forEach((thread) -> {
             try {
-                dbThreads.join();
+                thread.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-        }
+        });
         long timeFinal = System.currentTimeMillis();
         long time = timeFinal - timeInit;
         System.out.println("Duración: " + time + " milisegundos");
-        getDurationSume(mydbs);
+        getSume(mydbs);
 
     }
-
-    public static void getDurationSume(ArrayList<DatabaseManagement> myArray) {
+    //Consigue la suma de todos los ingresos
+    public static void getSume(ArrayList<DatabaseManagement> myArray) {
         int total = 0;
-        long timeInitSume = System.currentTimeMillis();
         for (DatabaseManagement mydb : myArray) {
             total += mydb.getTotal();
         }
         System.out.println("Suma de sueldos: " + total);
-        long timeFinalSume = System.currentTimeMillis();
-        long timeSume = timeInitSume - timeFinalSume;
-        System.out.println("Duración de la suma: " + timeSume + " milisegundos");
+
     }
 }
